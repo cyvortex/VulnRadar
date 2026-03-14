@@ -1,0 +1,17 @@
+{
+    "target": "offensoacademy.com",
+    "findings": [
+        {
+            "issue": "Discovered subdomain ftp.offensoacademy.com",
+            "severity": "Info"
+        },
+        {
+            "issue": "Discovered subdomain www.offensoacademy.com",
+            "severity": "Info"
+        },
+        {
+            "issue": "Discovered subdomain exams.offensoacademy.com",
+            "severity": "Info"
+        }
+    ]
+}
