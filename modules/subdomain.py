@@ -1,42 +1,33 @@
 import dns.resolver
-from concurrent.futures import ThreadPoolExecutor
-from modules.report import add_finding
-
-
-resolver = dns.resolver.Resolver()
-resolver.timeout = 3
-resolver.lifetime = 3
-
-
-def check_subdomain(target, sub):
-
-    domain = f"{sub}.{target}"
-
-    try:
-        dns.resolver.resolve(domain, "A")
-
-        print("Found:", domain)
-
-        add_finding(f"Discovered subdomain {domain}", "Info")
-
-    except:
-        pass
+from core.utils import SUBDOMAIN_WORDLIST, file_exists
 
 
 def subdomain_scan(target):
 
-    print("\n[+] Starting Wordlist Subdomain Discovery...\n")
+    print("\n[+] Starting Wordlist Subdomain Discovery...")
 
-    try:
-        with open("wordlists/subdomains.txt") as f:
-            subs = f.read().splitlines()
-
-    except:
+    if not file_exists(SUBDOMAIN_WORDLIST):
         print("Subdomain wordlist not found")
         return
 
+    try:
+        with open(SUBDOMAIN_WORDLIST, "r") as f:
+            subdomains = f.read().splitlines()
+    except:
+        print("Failed to load wordlist")
+        return
 
-    with ThreadPoolExecutor(max_workers=80) as executor:
+    found = []
 
-        for sub in subs:
-            executor.submit(check_subdomain, target, sub)
+    for sub in subdomains:
+        domain = f"{sub}.{target}"
+
+        try:
+            dns.resolver.resolve(domain, "A")
+            print(f"Found: {domain}")
+            found.append(domain)
+
+        except:
+            pass
+
+    return found
